@@ -6,13 +6,21 @@ import { glob } from 'glob';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/hex-react-tasks/week2/dist/',
+  base: '/hex-react-tasks/week3/dist/',
   plugins: [react()],
   server: {
     open: '/',
   },
   build: {
     rollupOptions: {
+      // input: Object.fromEntries(
+      //   glob
+      //     .sync('pages/**/*.{html,jsx,tsx}')
+      //     .map((file) => [
+      //       path.relative('pages', file.slice(0, file.length - path.extname(file).length)),
+      //       fileURLToPath(new URL(file, import.meta.url)),
+      //     ])
+      // ),
       input: Object.fromEntries(
         glob
           .sync('*.html')
@@ -25,4 +33,3 @@ export default defineConfig({
     outDir: 'dist',
   },
 })
-
