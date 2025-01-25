@@ -16,23 +16,6 @@ function App() {
   const [products, setProducts] = useState([]);
   const [tempProduct, setTempProduct] = useState({});
   const [pagination, setPagination] = useState({});
-  // const [tempData, setTempData] = useState({
-  //   title: '',
-  //   category: '',
-  //   origin_price: 0,
-  //   price: 0,
-  //   unit: 'unit',
-  //   description: '',
-  //   content: {
-  //     info: '',
-  //     size: '',
-  //     maintenance: '',
-  //   },
-  //   is_enabled: 1,
-  //   imageUrl: '',
-  //   imagesUrl: [],
-  //   tag: '',
-  // });
   const [type, setType] = useState('');
   const productModalRef = useRef(null);
 
@@ -53,30 +36,6 @@ function App() {
     getProducts();
   }, []);
 
-  // useEffect(() => {
-  //   if (type === 'create') {
-  //     setTempData({
-  //       title: '',
-  //       category: '',
-  //       origin_price: 0,
-  //       price: 0,
-  //       unit: 'unit',
-  //       description: '',
-  //       content: {
-  //         info: '',
-  //         size: '',
-  //         maintenance: '',
-  //       },
-  //       is_enabled: 1,
-  //       imageUrl: '',
-  //       imagesUrl: [],
-  //       tag: '',
-  //     });
-  //   } else if (type === 'edit') {
-  //     setTempData(tempProduct);
-  //   }
-  // }, [type, tempProduct]);
-
   function openProductModal(type, product) {
     setTempProduct(product);
     setType(type);
@@ -86,83 +45,6 @@ function App() {
   function closeProductModal() {
     productModalRef.current.hide();
   }
-
-  // const handleProductInputChange = (e) => {
-  //   const { name, value, checked } = e.target;
-
-  //   if (['info', 'size', 'maintenance'].includes(name)) {
-  //     setTempData((tempData) => ({
-  //       ...tempData,
-  //       content: {
-  //         ...tempData.content,
-  //         [name]: value,
-  //       },
-  //     }));
-  //   } else if (['price', 'origin_price'].includes(name)) {
-  //     setTempData({
-  //       ...tempData,
-  //       [name]: Number(value),
-  //     });
-  //   } else if (name === 'is_enabled') {
-  //     setTempData({
-  //       ...tempData,
-  //       [name]: Number(checked),
-  //     });
-  //   // } else if (name === 'imagesUrl') {
-  //   //   addImages(e);
-  //   } else {
-  //     setTempData({
-  //       ...tempData,
-  //       [name]: value,
-  //     });
-  //   }
-  // };
-
-  // const [ imageUrl, setImageUrl] = useState("");
-
-  // const addImages = (e) => {
-  //   e.preventDefault();
-
-  //   if (tempData.imagesUrl.length >= 3) {
-  //     alert('最多上傳 3 張照片');
-  //     return;
-  //   }
-
-  //   setTempData({
-  //     ...tempData,
-  //     imagesUrl: [...tempData.imagesUrl, imageUrl],
-  //   });
-
-  //   setImageUrl('');
-  // };
-
-  // const removeImage = () => {
-  //   setTempData((prevData) => {
-  //     const images = [...prevData.imagesUrl];
-  //     images.pop();
-  //     return { ...prevData, imagesUrl: images };
-  //   });
-  // }
-
-  // const handleProductSubmit = async () => {
-  //   try {
-  //     let api = `${API_BASE}/api/${API_PATH}/admin/product`;
-  //     let method = 'post';
-  //     if (type === 'edit') {
-  //       method = 'put';
-  //       api = `${API_BASE}/api/${API_PATH}/admin/product/${tempProduct.id}`;
-  //     }
-  //     const res = await axios[method](api, {
-  //       data: tempData,
-  //     });
-
-  //     console.log(res);
-  //     closeProductModal();
-  //     getProducts();
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const deleteProduct = async (id) => {
     try {
