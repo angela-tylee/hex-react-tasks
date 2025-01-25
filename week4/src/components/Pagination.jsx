@@ -4,7 +4,14 @@ const Pagination = ({ pagination, paginationTotal, changePage }) => {
     <nav aria-label="Page navigation example" className="mt-5">
       <ul className="pagination justify-content-center">
         <li className={`page-item ${pagination.has_pre ? '' : 'disabled'}`}>
-          <a className="page-link" href="#">
+          <a
+            className="page-link"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              changePage(pagination.current_page - 1);
+            }}
+          >
             Previous
           </a>
         </li>
@@ -31,7 +38,14 @@ const Pagination = ({ pagination, paginationTotal, changePage }) => {
           </li>
         ))}
         <li className={`page-item ${pagination.has_next ? '' : 'disabled'}`}>
-          <a className="page-link" href="#">
+          <a
+            className="page-link"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              changePage(pagination.current_page + 1);
+            }}
+          >
             Next
           </a>
         </li>
