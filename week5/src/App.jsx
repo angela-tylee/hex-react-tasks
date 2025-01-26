@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import ProductModal from './components/ProductModal';
 import Pagination from './components/Pagination';
 import { useForm } from "react-hook-form";
+import ReactLoading from 'react-loading';
 
 // const API_BASE = "https://ec-course-api.hexschool.io/v2";
 // const API_PATH = "";
@@ -13,6 +14,10 @@ function App() {
   const [pagination, setPagination] = useState({});
   const [tempProduct, setTempProduct] = useState([]);
   const [cart, setCart] = useState({});
+  
+  const [isLoadingOrder, setIsLoadingOrder] = useState(false);
+  const [isLoadingRemoveCart, setIsLoadingRemoveCart] = useState(false);
+  const [isLoadingCartItem, setIsLoadingCartItem] = useState(null);
 
   const productModalRef = useRef(null);
 
@@ -46,10 +51,6 @@ function App() {
     productModalRef.current.show();
   }
 
-  function closeProductModal() {
-    productModalRef.current.hide();
-  }
-
   const getProducts = async (page) => {
     try {
       const res = await axios.get(
@@ -64,20 +65,17 @@ function App() {
   };
 
   const getCart = async () => {
-    // setIsLoadingCart(true);
     try {
       const res = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
       console.log('cart', res);
       setCart(res.data.data);
-      // setIsLoadingCart(false);
     } catch (error) {
       console.error(error);
-      // setIsLoadingCart(false);
     }
   };
 
   const addToCart = async (productId, quantity) => {
-    // setIsLoadingItem(productId);
+    setIsLoadingCartItem(productId);
     try {
       const data = {
         data: {
@@ -88,13 +86,27 @@ function App() {
       await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`, data);
       await getCart();
       alert('已加入購物車!');
-      // setIsLoadingItem(null);
+      setIsLoadingCartItem(null);
     } catch (error) {
-      // setIsLoadingItem(null);
+      setIsLoadingCartItem(null);
       console.error(error);
       alert('失敗，請再試一次');
     }
   };
+
+  const removeCartAll = async () => {
+    setIsLoadingRemoveCart(true);
+    try {
+      const res = await axios.delete(`${VITE_API_BASE}/api/${VITE_API_PATH}/carts`)
+      console.log(res);
+      alert("已清空購物車")
+      setIsLoadingRemoveCart(false);
+      getCart();
+    } catch (error) {
+      console.error(error);
+      setIsLoadingRemoveCart(false);
+    }
+  }
 
   const onSubmit = async (data) => {
     const order = {
@@ -109,7 +121,7 @@ function App() {
       },
     };
 
-    // setIsLoading(true);
+    setIsLoadingOrder(true);
 
     try {
       const res = await axios.post(
@@ -124,15 +136,14 @@ function App() {
       //   );
       // }
 
-      // setIsLoading(false);
+      setIsLoadingOrder(false);
       reset();
       alert(res.data.message);
       getCart();
 
-      // Clear cart and form
     } catch (error) {
       console.error(error);
-      // setIsLoading(false);
+      setIsLoadingOrder(false);
     }
   };
 
@@ -176,18 +187,18 @@ function App() {
                     <div className="btn-group btn-group-sm">
                       <button
                         type="button"
-                        className="btn btn-outline-secondary"
+                        className="btn btn-outline-secondary d-flex"
                         onClick={() => openProductModal(product)}
                       >
-                        <i className="fas fa-spinner fa-pulse"></i>
                         查看更多
                       </button>
                       <button
                         type="button"
-                        className="btn btn-outline-danger"
+                        className="btn btn-outline-danger d-flex"
                         onClick={() => addToCart(product.id, 1)}
+                        disabled={isLoadingCartItem === product.id}
                       >
-                        <i className="fas fa-spinner fa-pulse"></i>
+                        <ReactLoading type="spinningBubbles" width="16px" height="16px" color="red" className={`me-2 ${isLoadingCartItem === product.id ? '' : 'd-none'}`}/>
                         加到購物車
                       </button>
                     </div>
@@ -204,7 +215,11 @@ function App() {
         </section>
         <section>
           <div className="text-end">
-            <button className="btn btn-outline-danger" type="button">
+            <button className="btn btn-outline-danger d-flex" type="button"
+            onClick={removeCartAll}
+            disabled={isLoadingRemoveCart}
+            >
+              <ReactLoading type="spinningBubbles" width="16px" height="16px" color="red" className={`me-2 ${isLoadingRemoveCart ? '': 'd-none'}`}/>
               清空購物車
             </button>
           </div>
@@ -384,8 +399,9 @@ function App() {
               ></textarea>
             </div>
             <div className="text-end">
-              <button type="submit" className="btn btn-danger"
+              <button type="submit" className="btn btn-danger d-flex"
               disabled={cart.carts?.length === 0}>
+                <ReactLoading type="spinningBubbles" width="16px" height="16px" className={`me-2 ${isLoadingOrder ? '': 'd-none'}`}/>
                 送出訂單
               </button>
             </div>
