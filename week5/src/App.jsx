@@ -130,11 +130,11 @@ function App() {
       );
 
       console.log(res);
-      // if (res.data.orderId) {
-      //   await axios.post(
-      //     `${VITE_API_BASE}/api/${VITE_API_PATH}/pay/${res.data.orderId}`
-      //   );
-      // }
+      if (res.data.orderId) {
+        await axios.post(
+          `${VITE_API_BASE}/api/${VITE_API_PATH}/pay/${res.data.orderId}`
+        );
+      }
 
       setIsLoadingOrder(false);
       reset();
@@ -339,7 +339,7 @@ function App() {
               <input
                 id="tel"
                 name="電話"
-                type="text"
+                type="tel"
                 className={`form-control ${errors.tel && 'is-invalid'}`}
                 placeholder="請輸入電話"
                 {...register('tel', {
@@ -348,12 +348,8 @@ function App() {
                     message: '電話為必填',
                   },
                   minLength: {
-                    value: 6,
-                    message: '電話需至少 6 碼',
-                  },
-                  maxLength: {
-                    value: 12,
-                    message: '電話不可多餘 12 碼',
+                    value: 8,
+                    message: '電話需至少 8 碼',
                   },
                 })}
               />
