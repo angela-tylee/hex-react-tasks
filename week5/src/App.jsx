@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ProductModal from './components/ProductModal';
 import Pagination from './components/Pagination';
+import { useForm } from "react-hook-form";
 
 // const API_BASE = "https://ec-course-api.hexschool.io/v2";
 // const API_PATH = "";
@@ -14,6 +15,22 @@ function App() {
   const [cart, setCart] = useState({});
 
   const productModalRef = useRef(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: '',
+      name: '',
+      tel: '',
+      address: '',
+      message: '',
+    },
+    mode: 'onTouched',
+  });
 
   useEffect(() => {
     productModalRef.current = new window.bootstrap.Modal('#productModal', {
@@ -79,16 +96,16 @@ function App() {
     }
   };
 
-  const submit = async (data) => {
+  const onSubmit = async (data) => {
     const order = {
       data: {
         user: {
-          name: `${data.firstName} ${data.lastName}`,
+          name: data.name,
           email: data.email,
-          tel: data.phone,
-          address: `${data.streetAddress}, ${data.city}, ${data.county}, ${data.country} ${data.postCode}`,
+          tel: data.tel,
+          address: data.address,
         },
-        message: '',
+        message: data.message,
       },
     };
 
@@ -100,16 +117,19 @@ function App() {
         order
       );
 
-      if (res.data.orderId) {
-        await axios.post(
-          `${VITE_API_BASE}/api/${VITE_API_PATH}/pay/${res.data.orderId}`
-        );
-      }
+      console.log(res);
+      // if (res.data.orderId) {
+      //   await axios.post(
+      //     `${VITE_API_BASE}/api/${VITE_API_PATH}/pay/${res.data.orderId}`
+      //   );
+      // }
 
       // setIsLoading(false);
+      reset();
+      alert(res.data.message);
       getCart();
+
       // Clear cart and form
-      // navigate(`/checkout-success/${res.data.orderId}`);
     } catch (error) {
       console.error(error);
       // setIsLoading(false);
@@ -246,57 +266,110 @@ function App() {
           </table>
         </section>
         <section className="my-5 row justify-content-center">
-          <form className="col-md-6">
+          <form className="col-md-6" onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3">
               <label htmlFor="email" className="form-label">
-                Email
+                Email<span className="text-danger">*</span>
               </label>
               <input
                 id="email"
-                name="email"
                 type="email"
-                className="form-control"
+                className={`form-control ${errors.email && 'is-invalid'}`}
                 placeholder="請輸入 Email"
+                {...register('email', {
+                  required: {
+                    value: true,
+                    message: 'Email 為必填',
+                  },
+                  pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: 'Email 格式錯誤',
+                  },
+                })}
               />
+              {errors.email && (
+                <div className="invalid-feedback">
+                  {errors?.email?.message}
+                </div>
+              )}
             </div>
 
             <div className="mb-3">
               <label htmlFor="name" className="form-label">
-                收件人姓名
+                收件人姓名<span className="text-danger">*</span>
               </label>
               <input
                 id="name"
-                name="姓名"
                 type="text"
-                className="form-control"
+                className={`form-control ${errors.name && 'is-invalid'}`}
                 placeholder="請輸入姓名"
+                {...register('name', {
+                  required: {
+                    value: true,
+                    message: '姓名為必填',
+                  },
+                })}
               />
+              {errors.name && (
+                <div className="invalid-feedback">
+                  {errors?.name?.message}
+                </div>
+              )}
             </div>
 
             <div className="mb-3">
               <label htmlFor="tel" className="form-label">
-                收件人電話
+                收件人電話<span className="text-danger">*</span>
               </label>
               <input
                 id="tel"
                 name="電話"
                 type="text"
-                className="form-control"
+                className={`form-control ${errors.tel && 'is-invalid'}`}
                 placeholder="請輸入電話"
+                {...register('tel', {
+                  required: {
+                    value: true,
+                    message: '電話為必填',
+                  },
+                  minLength: {
+                    value: 6,
+                    message: '電話需至少 6 碼',
+                  },
+                  maxLength: {
+                    value: 12,
+                    message: '電話不可多餘 12 碼',
+                  },
+                })}
               />
+              {errors.tel && (
+                <div className="invalid-feedback">
+                  {errors?.tel?.message}
+                </div>
+              )}
             </div>
 
             <div className="mb-3">
               <label htmlFor="address" className="form-label">
-                收件人地址
+                收件人地址<span className="text-danger">*</span>
               </label>
               <input
                 id="address"
-                name="地址"
                 type="text"
-                className="form-control"
+                className={`form-control ${errors.address && 'is-invalid'}`}
                 placeholder="請輸入地址"
+                {...register('address', {
+                  required: {
+                    value: true,
+                    message: '地址為必填',
+                  },
+                })}
               />
+              {errors.address && (
+                <div className="invalid-feedback">
+                  {errors?.address?.message}
+                </div>
+              )}
             </div>
 
             <div className="mb-3">
@@ -311,7 +384,8 @@ function App() {
               ></textarea>
             </div>
             <div className="text-end">
-              <button type="submit" className="btn btn-danger">
+              <button type="submit" className="btn btn-danger"
+              disabled={cart.carts?.length === 0}>
                 送出訂單
               </button>
             </div>
