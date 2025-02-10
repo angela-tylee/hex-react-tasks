@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ProductModal from './components/ProductModal';
 import Pagination from './components/Pagination';
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 import ReactLoading from 'react-loading';
 
 // const API_BASE = "https://ec-course-api.hexschool.io/v2";
@@ -14,9 +14,10 @@ function App() {
   const [pagination, setPagination] = useState({});
   const [tempProduct, setTempProduct] = useState([]);
   const [cart, setCart] = useState({});
-  
+
   const [isLoadingOrder, setIsLoadingOrder] = useState(false);
   const [isLoadingRemoveCart, setIsLoadingRemoveCart] = useState(false);
+  const [isLoadingQty, setIsLoadingQty] = useState(null);
   const [isLoadingCartItem, setIsLoadingCartItem] = useState(null);
 
   const productModalRef = useRef(null);
@@ -94,19 +95,54 @@ function App() {
     }
   };
 
+  const updateQty = async (cartItem, newQty) => {
+    setIsLoadingQty(cartItem.id);
+    try {
+      await axios.put(
+        `${VITE_API_BASE}/api/${VITE_API_PATH}/cart/${cartItem.id}`,
+        {
+          data: {
+            product_id: cartItem.product_id,
+            qty: newQty,
+          },
+        }
+      );
+      setIsLoadingQty(null);
+      getCart();
+    } catch (error) {
+      console.error(error);
+      setIsLoadingQty(null);
+      alert('失敗，請再試一次');
+    }
+  };
+
+  const deleteCartItem = async (id) => {
+    try {
+      const res = await axios.delete(
+        `${VITE_API_BASE}/api/${VITE_API_PATH}/cart/${id}`
+      );
+      alert(res.data.message);
+      getCart();
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
   const removeCartAll = async () => {
     setIsLoadingRemoveCart(true);
     try {
-      const res = await axios.delete(`${VITE_API_BASE}/api/${VITE_API_PATH}/carts`)
+      const res = await axios.delete(
+        `${VITE_API_BASE}/api/${VITE_API_PATH}/carts`
+      );
       console.log(res);
-      alert("已清空購物車")
+      alert('已清空購物車');
       setIsLoadingRemoveCart(false);
       getCart();
     } catch (error) {
       console.error(error);
       setIsLoadingRemoveCart(false);
     }
-  }
+  };
 
   const onSubmit = async (data) => {
     const order = {
@@ -140,7 +176,6 @@ function App() {
       reset();
       alert(res.data.message);
       getCart();
-
     } catch (error) {
       console.error(error);
       setIsLoadingOrder(false);
@@ -198,7 +233,15 @@ function App() {
                         onClick={() => addToCart(product.id, 1)}
                         disabled={isLoadingCartItem === product.id}
                       >
-                        <ReactLoading type="spinningBubbles" width="16px" height="16px" color="red" className={`me-2 ${isLoadingCartItem === product.id ? '' : 'd-none'}`}/>
+                        <ReactLoading
+                          type="spinningBubbles"
+                          width="16px"
+                          height="16px"
+                          color="red"
+                          className={`me-2 ${
+                            isLoadingCartItem === product.id ? '' : 'd-none'
+                          }`}
+                        />
                         加到購物車
                       </button>
                     </div>
@@ -215,17 +258,26 @@ function App() {
         </section>
         <section>
           <div className="text-end">
-            <button className="btn btn-outline-danger d-flex" type="button"
-            onClick={removeCartAll}
-            disabled={isLoadingRemoveCart}
+            <button
+              className="btn btn-outline-danger d-flex"
+              type="button"
+              onClick={removeCartAll}
+              disabled={isLoadingRemoveCart}
             >
-              <ReactLoading type="spinningBubbles" width="16px" height="16px" color="red" className={`me-2 ${isLoadingRemoveCart ? '': 'd-none'}`}/>
+              <ReactLoading
+                type="spinningBubbles"
+                width="16px"
+                height="16px"
+                color="red"
+                className={`me-2 ${isLoadingRemoveCart ? '' : 'd-none'}`}
+              />
               清空購物車
             </button>
           </div>
           <table className="table align-middle">
             <thead>
               <tr>
+                <th></th>
                 <th></th>
                 <th>品名</th>
                 <th style={{ width: '150px' }}>數量</th>
@@ -237,6 +289,7 @@ function App() {
               {cart.carts?.length > 0 ? (
                 cart.carts.map((cartItem) => (
                   <tr key={cartItem.product.id}>
+                    <td><button type="button" className="btn-close" onClick={() => {deleteCartItem(cartItem.id)}}></button></td>
                     <td>
                       <img
                         src={cartItem.product.imagesUrl[0]}
@@ -245,20 +298,65 @@ function App() {
                       />
                     </td>
                     <td>{cartItem.product.title}</td>
-                    <td>{cartItem.qty}</td>
+                    <td>
+                      <div className="input-group">
+                        <button
+                          className="btn btn-outline-secondary text-dark px-1 px-sm-auto"
+                          type="button"
+                          id="button-addon1"
+                          onClick={() => updateQty(cartItem, cartItem.qty - 1)}
+                          disabled={isLoadingQty || cartItem.qty === 1}
+                        >
+                          <i className="bi bi-dash"></i>
+                        </button>
+                        {isLoadingQty === cartItem.id ? (
+                          <div className="form-control text-center px-1 px-sm-auto">
+                            <ReactLoading
+                              type="spinningBubbles"
+                              width="12px"
+                              height="12px"
+                              color="gray"
+                              className={`mb-3 mx-auto ${
+                                isLoadingQty === cartItem.id ? '' : 'd-none'
+                              }`}
+                            />
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            className="form-control text-center px-1 px-sm-auto"
+                            aria-label="Example text with button addon"
+                            aria-describedby="button-addon1"
+                            value={cartItem.qty}
+                            readOnly
+                          />
+                        )}
+
+                        <button
+                          className="btn btn-outline-secondary text-dark px-1 px-sm-auto"
+                          type="button"
+                          id="button-addon1"
+                          onClick={() => updateQty(cartItem, cartItem.qty + 1)}
+                          disabled={isLoadingQty}
+                        >
+                          <i className="bi bi-plus"></i>
+                        </button>
+                      </div>
+                    </td>
                     <td>{cartItem.product.price}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center py-5">
+                  <td colSpan="5" className="text-center py-5">
+                  目前購物車沒有商品，
                     <button
-                      className="btn btn-link text-dark"
+                      className="btn btn-link text-dark ps-0"
                       onClick={() =>
                         window.scrollTo({ top: 0, behavior: 'smooth' })
                       }
                     >
-                      新增產品到購物車
+                      立刻前往購買
                     </button>
                   </td>
                 </tr>
@@ -266,16 +364,16 @@ function App() {
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan="3" className="text-end">
+                <td colSpan="4" className="text-end">
                   總計
                 </td>
-                <td className="text-end">{cart.total}</td>
+                <td>{cart.total}</td>
               </tr>
               <tr>
-                <td colSpan="3" className="text-end text-success">
+                <td colSpan="4" className="text-end text-success">
                   折扣價
                 </td>
-                <td className="text-end text-success">{cart.final_total}</td>
+                <td className="text-success">{cart.final_total}</td>
               </tr>
             </tfoot>
           </table>
@@ -303,9 +401,7 @@ function App() {
                 })}
               />
               {errors.email && (
-                <div className="invalid-feedback">
-                  {errors?.email?.message}
-                </div>
+                <div className="invalid-feedback">{errors?.email?.message}</div>
               )}
             </div>
 
@@ -326,9 +422,7 @@ function App() {
                 })}
               />
               {errors.name && (
-                <div className="invalid-feedback">
-                  {errors?.name?.message}
-                </div>
+                <div className="invalid-feedback">{errors?.name?.message}</div>
               )}
             </div>
 
@@ -354,9 +448,7 @@ function App() {
                 })}
               />
               {errors.tel && (
-                <div className="invalid-feedback">
-                  {errors?.tel?.message}
-                </div>
+                <div className="invalid-feedback">{errors?.tel?.message}</div>
               )}
             </div>
 
@@ -395,9 +487,17 @@ function App() {
               ></textarea>
             </div>
             <div className="text-end">
-              <button type="submit" className="btn btn-danger d-flex"
-              disabled={cart.carts?.length === 0}>
-                <ReactLoading type="spinningBubbles" width="16px" height="16px" className={`me-2 ${isLoadingOrder ? '': 'd-none'}`}/>
+              <button
+                type="submit"
+                className="btn btn-danger d-flex"
+                disabled={cart.carts?.length === 0}
+              >
+                <ReactLoading
+                  type="spinningBubbles"
+                  width="16px"
+                  height="16px"
+                  className={`me-2 ${isLoadingOrder ? '' : 'd-none'}`}
+                />
                 送出訂單
               </button>
             </div>
