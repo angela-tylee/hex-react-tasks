@@ -82,16 +82,6 @@ const ProductModal = ({ tempProduct }) => {
             </div>
           </div>
           <div className="modal-footer">
-            {/* <button
-                type="button"
-                className="btn btn-outline-secondary"
-                data-bs-dismiss="modal"
-              >
-                取消
-              </button>
-              <button type="button" className="btn btn-primary" onClick={handleProductSubmit}>
-                確認
-              </button> */}
           </div>
         </div>
       </div>
