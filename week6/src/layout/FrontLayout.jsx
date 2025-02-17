@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 
 const FrontLayout = () => {
   return (
@@ -22,19 +22,19 @@ const FrontLayout = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <Link to="/products" className="nav-link active" aria-current="page" href="#">
+                <NavLink to="/products" className="nav-link" aria-current="page" href="#">
                   產品
-                </Link>
+                </NavLink>
               </li>
               <li className="nav-item">
-                <Link to="/cart" className="nav-link" href="#">
+                <NavLink to="/cart" className="nav-link" href="#">
                   購物車
-                </Link>
+                </NavLink>
               </li>
               <li className="nav-item">
-                <Link to="/login" className="nav-link" href="#">
+                <NavLink to="/login" className="nav-link" href="#">
                   登入
-                </Link>
+                </NavLink>
               </li>
             </ul>
           </div>

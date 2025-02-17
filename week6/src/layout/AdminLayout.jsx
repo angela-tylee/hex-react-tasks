@@ -1,5 +1,5 @@
 import { useEffect} from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 const { VITE_API_BASE } = import.meta.env;
 
@@ -64,14 +64,14 @@ const AdminLayout = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <Link to="/admin/products" className="nav-link active" aria-current="page" href="#">
+                <NavLink to="/admin/products" className="nav-link" aria-current="page" href="#">
                   後台產品
-                </Link>
+                </NavLink>
               </li>
               <li className="nav-item">
-                <Link to="/admin/orders" className="nav-link" href="#">
+                <NavLink to="/admin/orders" className="nav-link" href="#">
                   後台訂單
-                </Link>
+                </NavLink>
               </li>
             </ul>
           </div>
