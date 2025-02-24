@@ -5,7 +5,7 @@ import Pagination from './components/Pagination';
 // const API_BASE = 'https://ec-course-api.hexschool.io/v2';
 // const API_PATH = 'angela-carpento';
 
-const {VITE_API_BASE, VITE_API_PATH} = import.meta.env;
+const { VITE_API_BASE, VITE_API_PATH } = import.meta.env;
 
 function App() {
   const [formData, setFormData] = useState({
