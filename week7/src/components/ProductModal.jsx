@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { createAsyncMessage } from '../store/messageSlice';
+import { useDispatch } from 'react-redux';
 
 const ProductModal = ({ type, tempProduct, closeProductModal, getProducts }) => {
 
@@ -77,7 +79,7 @@ const ProductModal = ({ type, tempProduct, closeProductModal, getProducts }) => 
     }
   };
 
-  const [ imageUrl, setImageUrl] = useState("");
+  const [ imageUrl, setImageUrl ] = useState("");
 
   const addImages = (e) => {
     e.preventDefault();
@@ -103,6 +105,8 @@ const ProductModal = ({ type, tempProduct, closeProductModal, getProducts }) => 
     });
   }
 
+  const dispatch = useDispatch();
+
   const handleProductSubmit = async () => {
     try {
       let api = `${VITE_API_BASE}/api/${VITE_API_PATH}/admin/product`;
@@ -116,10 +120,12 @@ const ProductModal = ({ type, tempProduct, closeProductModal, getProducts }) => 
       });
 
       console.log(res);
+      dispatch(createAsyncMessage(res.data));
       closeProductModal();
       getProducts();
     } catch (error) {
       console.error(error);
+      dispatch(createAsyncMessage(error.response.data));
     }
   };
 

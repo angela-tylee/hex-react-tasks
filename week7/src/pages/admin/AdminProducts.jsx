@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import ProductModal from '../../components/ProductModal';
 import Pagination from '../../components/Pagination';
+import { createAsyncMessage } from '../../store/messageSlice';
+import { useDispatch } from 'react-redux';
 
 const { VITE_API_BASE, VITE_API_PATH } = import.meta.env;
 
@@ -40,16 +42,19 @@ const AdminProducts = () => {
     productModalRef.current.hide();
   }
 
+  const dispatch = useDispatch();
+
   const deleteProduct = async (id) => {
     try {
       const res = await axios.delete(
         `${VITE_API_BASE}/api/${VITE_API_PATH}/admin/product/${id}`
       );
       console.log(res);
-      alert(res.data.message);
+      dispatch(createAsyncMessage(res.data));
       getProducts();
     } catch (error) {
       console.error(error);
+      dispatch(createAsyncMessage(error.response.data));
     }
   };
 

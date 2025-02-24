@@ -1,5 +1,6 @@
 import { useEffect} from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import Message from '../components/Message';
 
 const { VITE_API_BASE } = import.meta.env;
 
@@ -45,6 +46,7 @@ const AdminLayout = () => {
 
   return (
     <>
+      <Message />
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <a className="navbar-brand" href="#">

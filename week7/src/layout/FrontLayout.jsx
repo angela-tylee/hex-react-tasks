@@ -1,8 +1,10 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import Message from '../components/Message';
 
 const FrontLayout = () => {
   return (
     <>
+      <Message />
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <a className="navbar-brand" href="#">
@@ -22,7 +24,12 @@ const FrontLayout = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <NavLink to="/products" className="nav-link" aria-current="page" href="#">
+                <NavLink
+                  to="/products"
+                  className="nav-link"
+                  aria-current="page"
+                  href="#"
+                >
                   產品
                 </NavLink>
               </li>

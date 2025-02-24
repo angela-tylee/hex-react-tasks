@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { createAsyncMessage } from '../../store/messageSlice';
+import { useDispatch } from 'react-redux';
 
 const { VITE_API_BASE, VITE_API_PATH } = import.meta.env;
 
@@ -9,6 +11,9 @@ const ProductPage = () => {
   const [product, setProduct] = useState({});
   const [cartQty, setCartQty] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
 
   const getProduct = async (id) => {
     try {
@@ -31,14 +36,16 @@ const ProductPage = () => {
           qty: quantity,
         },
       };
-      await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`, data);
+      const res = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`, data);
       // await getCart();
-      alert('已加入購物車!');
+      // alert('已加入購物車!');
+      dispatch(createAsyncMessage(res.data));
       setIsLoading(null);
     } catch (error) {
       setIsLoading(null);
       console.error(error);
-      alert('失敗，請再試一次');
+      // alert('失敗，請再試一次');
+      dispatch(createAsyncMessage(error.response.data));
     }
   };
 

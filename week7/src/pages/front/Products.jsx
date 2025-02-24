@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import Pagination from '../../components/Pagination';
 import ReactLoading from 'react-loading';
+import { createAsyncMessage } from '../../store/messageSlice';
+import { useDispatch } from 'react-redux';
 
 const { VITE_API_BASE, VITE_API_PATH } = import.meta.env;
 
@@ -12,6 +14,7 @@ const Products = () => {
   
   const [isLoadingCartItem, setIsLoadingCartItem] = useState(null);
 
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getProducts();
@@ -38,13 +41,15 @@ const Products = () => {
           qty: quantity,
         },
       };
-      await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`, data);
-      alert('已加入購物車!');
+      const res = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`, data);
+      // alert('已加入購物車!');
+      dispatch(createAsyncMessage(res.data));
       setIsLoadingCartItem(null);
     } catch (error) {
       setIsLoadingCartItem(null);
       console.error(error);
-      alert('失敗，請再試一次');
+      // alert('失敗，請再試一次');
+      dispatch(createAsyncMessage(error.response.data));
     }
   };
 

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import ReactLoading from 'react-loading';
+import { createAsyncMessage } from '../../store/messageSlice';
+import { useDispatch } from 'react-redux';
 
 const { VITE_API_BASE, VITE_API_PATH } = import.meta.env;
 
@@ -9,6 +12,9 @@ const Cart = () => {
   const [isLoadingOrder, setIsLoadingOrder] = useState(false);
   const [isLoadingRemoveCart, setIsLoadingRemoveCart] = useState(false);
   const [isLoadingQty, setIsLoadingQty] = useState(null);
+
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
     getCart();
@@ -57,7 +63,6 @@ const Cart = () => {
     } catch (error) {
       console.error(error);
       setIsLoadingQty(null);
-      alert('失敗，請再試一次');
     }
   };
 
@@ -66,10 +71,12 @@ const Cart = () => {
       const res = await axios.delete(
         `${VITE_API_BASE}/api/${VITE_API_PATH}/cart/${id}`
       );
-      alert(res.data.message);
+      // alert(res.data.message);
+      dispatch(createAsyncMessage(res.data));
       getCart();
     } catch (error) {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      dispatch(createAsyncMessage(error.response.data));
     }
   };
 
@@ -80,12 +87,14 @@ const Cart = () => {
         `${VITE_API_BASE}/api/${VITE_API_PATH}/carts`
       );
       console.log(res);
-      alert('已清空購物車');
+      // alert('已清空購物車');
+      dispatch(createAsyncMessage(res.data));
       setIsLoadingRemoveCart(false);
       getCart();
     } catch (error) {
       console.error(error);
       setIsLoadingRemoveCart(false);
+      dispatch(createAsyncMessage(error.response.data));
     }
   };
 
@@ -119,11 +128,13 @@ const Cart = () => {
 
       setIsLoadingOrder(false);
       reset();
-      alert(res.data.message);
+      // alert(res.data.message);
+      dispatch(createAsyncMessage(res.data));
       getCart();
     } catch (error) {
       console.error(error);
       setIsLoadingOrder(false);
+      dispatch(createAsyncMessage(error.response.data));
     }
   };
 
@@ -234,11 +245,8 @@ const Cart = () => {
                   目前購物車沒有商品，
                   <button
                     className="btn btn-link text-dark ps-0"
-                    onClick={() =>
-                      window.scrollTo({ top: 0, behavior: 'smooth' })
-                    }
                   >
-                    立刻前往購買
+                    <NavLink to='/products' className="text-body">立刻前往購買</NavLink>
                   </button>
                 </td>
               </tr>
