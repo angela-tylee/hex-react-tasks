@@ -33,6 +33,20 @@ const AdminLayout = () => {
     }
   }
 
+  
+  async function logout() {
+    try {
+      await axios.post(`${VITE_API_BASE}/logout`);
+      
+      document.cookie = "carpento=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      
+      navigate('../login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      alert('登出失敗，請稍後再試');
+    }
+  };
+
   useEffect(() => {
     if (!token) {
       navigate('../login');
@@ -63,7 +77,7 @@ const AdminLayout = () => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
+          <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
                 <NavLink to="/admin/products" className="nav-link" aria-current="page" href="#">
@@ -76,6 +90,9 @@ const AdminLayout = () => {
                 </NavLink>
               </li>
             </ul>
+            <div className="nav-item py-2 py-lg-0" onClick={logout} style={{cursor: 'pointer'}}>
+              登出
+            </div>
           </div>
         </div>
       </nav>
